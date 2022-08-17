@@ -1,6 +1,7 @@
 package br.com.ecommerce.infra.rest
 
 import br.com.ecommerce.domain.customer.Customer
+import br.com.ecommerce.domain.customer.CustomerRepository
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -18,8 +19,15 @@ internal class CustomerControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var customerRepository: CustomerRepository
+
     @Test
     fun `should return a list of customers`() {
+
+        customerRepository.save(Customer("Customer 001"))
+        customerRepository.save(Customer("Customer 002"))
+
         mockMvc.get("/customers") {
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
@@ -29,7 +37,7 @@ internal class CustomerControllerTest {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
             content {
-                jsonPath("$", Matchers.arrayWithSize<Customer>(2))
+                jsonPath("$", Matchers.hasSize<Customer>(2))
             }
         }
     }
